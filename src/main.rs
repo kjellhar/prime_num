@@ -3,27 +3,64 @@ use std::time::{Instant};
 
 fn main() {
 
-    let mut prime_numbers: Vec<u32> = Vec::new();
-    let mut numbers_to_test: Vec<u32> = (4..u32::MAX).rev().filter(|n| n%2 == 1).collect();
-
-    //Add first prime number
-    prime_numbers.push(3);
-
-    let mut test_progress: usize = 0;
-    let mut max_number_to_test: u32 = prime_numbers[test_progress].pow(2);
-
     let start = Instant::now();
-    while let Some(num_to_test) = numbers_to_test.pop() {
-        if max_number_to_test <= num_to_test {test_progress += 1};
-        max_number_to_test = prime_numbers[test_progress].pow(2);
 
-        if prime_numbers[0..test_progress].iter().all(|p|num_to_test%p > 0) {
-            prime_numbers.push(num_to_test);
+    //const MAX_NUMBER: usize = 128*10000000;
+    const MAX_NUMBER: usize = 2_usize.pow(32) as usize;
+
+    let size_of_word: usize = usize::BITS as usize;
+    // Generate vector to store the prime number check
+    // Store one bit for each odd number to check. Don't bother with 
+    // even numbers since they are not prime.
+    // All are marked as prime to start with, and the test is to see if they
+    // are not
+    let mut prime_check: Vec<usize> = vec![0; MAX_NUMBER/(2*size_of_word)];
+
+
+    // Iterate only over odd numbers starting ith 3
+    // The index is global bit index
+    // Vector index is bit index divided by 64, rounded down.
+    let mut number_to_test: usize = 3;
+
+    loop {       
+        let mut number = number_to_test*number_to_test;  
+        if number > MAX_NUMBER {
+            break;
+        }
+
+        loop {
+            let total_index = (number-1)>>1;
+            let vec_index = total_index >> 6;
+            let bit_index = total_index & 0x3F;
+
+            // Identify the bit in question
+            prime_check[vec_index] |= 1<<bit_index as usize;
+            
+            // We can skip every other since that will be an even number
+            number += 2*number_to_test;
+
+            if number > MAX_NUMBER {
+                break;
+            }
+        }
+        number_to_test += 2;
+        
+    }
+
+    // Count prime numbers
+    let mut counter  = 0 as usize;
+    for element in prime_check {
+        for bit in 0..63 {
+            if (element >> bit) & 1 == 0 {
+                counter += 1;
+            }
         }
     }
 
-    let duration = start.elapsed();
-    //prime_numbers.iter().for_each(|p|println!("{}", p));
-    println!("Number of found primes: {}", prime_numbers.len());
-    println!("Time elapsed: {}", duration.as_secs());
+    let duration = Instant::now() - start;
+    println!("Total duration:  {}", duration.as_secs());
+    println!("Number of primes:   {}", counter);
+
 }
+
+    
