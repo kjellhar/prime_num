@@ -38,7 +38,7 @@ fn main() {
     // }
 
        // count all the primes
-       let mut prime_count = 1;
+       let mut prime_count: usize = 1;
        for element in primes.iter() {
            for bit in 0..=63 {
                if (element >> bit) & 1 == 0 {
