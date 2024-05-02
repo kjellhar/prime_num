@@ -4,11 +4,23 @@ fn main() {
     let start = Instant::now();
 
     //const MAX_NUMBER: usize = 4096;
-    const MAX_NUMBER: usize = 2_usize.pow(38);
+    const MAX_NUMBER: usize = 2_usize.pow(32);
     let size_of_word: usize = usize::BITS as usize;
 
     let mut primes: Vec<usize> = vec![0; MAX_NUMBER / (2 * size_of_word)];
     primes[0] = 1;
+
+
+    //     //Copilot rewrite to iterators. Doens't work
+    // (3..).step_by(2)
+    // .take_while(|p| p * p < MAX_NUMBER)
+    // .filter(|&p| (primes[p >> 7] >> ((p >> 1) & 0x3F)) & 1 == 0)
+    // .for_each(|p| {
+    //     (p * p..MAX_NUMBER).step_by(p * 2)
+    //         .for_each(|i| {
+    //             primes[i >> 7] |= 1 << ((i >> 1) & 0x3F);
+    //         });
+    // });
 
     //Calculate all the odd number non-primes
     let mut p: usize = 3;
