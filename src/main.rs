@@ -10,6 +10,7 @@ fn main() {
     let mut primes: Vec<usize> = vec![0; MAX_NUMBER / (2 * size_of_word)];
     primes[0] = 1;
 
+    //Calculate all the odd number non-primes
     let mut p: usize = 3;
     while p * p < MAX_NUMBER {
         if (primes[p >> 7] >> ((p >> 1) & 0x3F)) & 1 == 0 {
@@ -22,6 +23,7 @@ fn main() {
         p += 2;
     }
 
+    // collect all the primes in a vector
     let mut prime_list: Vec<usize> = Vec::new();
     prime_list.push(2);
     for (index, element) in primes.iter().enumerate() {
